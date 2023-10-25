@@ -53,13 +53,13 @@ const loginUser = async (req, res) => {
 
         bcrypt.compare(password, user.password, function (err, result) {
             if (result === true) {
-                const token = jwt.sign({ username: user.username, email: user.email, id: user._id },
+                const token = jwt.sign({ username: user.username, email: user.email, id: user._id, role: user.role },
                     process.env.JWT_SECRET);
 
                 return res.cookie("token", token,
                     { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
                     .status(200)
-                    .json({ msg: "User  found!", status: "success" })
+                    .json({ msg: "User  found!", user, status: "success" })
             } else {
                 return res.status(403).json({ msg: "Username or Password wrong!", status: "failed" })
             }
