@@ -10,4 +10,21 @@ body {
     .hover_state>li>a:hover {
         @apply text-blue-600 transition-all
     }
+
+    .form>input {
+        @apply bg-slate-100 my-2 p-3 rounded-lg outline-none text-lg
+    }
+
+    .form_btn_1 {
+        @apply bg-slate-700 my-2 p-3 rounded-lg text-white transition-all w-full
+    }
+
+    .form_btn_2 {
+        @apply bg-red-700 my-2 p-3 rounded-lg text-white w-full
+    }
+
+    .link_blue {
+        @apply text-blue-600
+    }
+
 }

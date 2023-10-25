@@ -19,16 +19,17 @@ const Header = () => {
 
                 <ul className='flex gap-6 text-lg hover_state'>
                     <li>
-                        <NavLink to='/signin'
-                            className={({ isActive, IsPending }) => isActive && "text-blue-700"}
-                        >Sign In</NavLink>
-                    </li>
-                    <li>
-                        <NavLink to='/signup' className={({ isActive, IsPending }) => isActive && "text-blue-700"}>Sign Up</NavLink>
+                        <NavLink to='/' className={({ isActive, IsPending }) => isActive && "text-blue-700"}>Home</NavLink>
                     </li>
                     <li>
                         <NavLink to='/about' className={({ isActive, IsPending }) => isActive && "text-blue-700"}>About</NavLink>
                     </li>
+                    <li>
+                        <NavLink to='/signin'
+                            className={({ isActive, IsPending }) => isActive && "text-blue-700"}
+                        >Sign In</NavLink>
+                    </li>
+
                 </ul>
             </div>
         </div>

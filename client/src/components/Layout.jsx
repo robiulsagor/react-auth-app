@@ -6,7 +6,9 @@ const Layout = () => {
     return (
         <>
             <Header />
-            <Outlet />
+            <div className='max-w-6xl mx-auto mt-14'>
+                <Outlet />
+            </div>
         </>
     )
 }
