@@ -11,7 +11,7 @@ const isAdmin = async (req, res, next) => {
     const decode = jwt.verify(token, process.env.JWT_SECRET)
 
     if (decode.role == "admin") {
-        req.user = user
+        req.user = decode
         next()
     } else {
         return res.json({ msg: "You are not allowed to go!", status: "failed" })
