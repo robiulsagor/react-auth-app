@@ -1,3 +1,7 @@
+import jwt from "jsonwebtoken"
+
+import bcrypt from "bcrypt"
+const saltRounds = 10;
 import User from "../models/user.js"
 
 const registerUser = async (req, res) => {
@@ -19,12 +23,49 @@ const registerUser = async (req, res) => {
     }
 
     try {
-        const user = await User.create({ username, email, password })
-        return res.status(201).json({ msg: "User created", user, status: "success" })
+        bcrypt.hash(password, saltRounds, async function (err, hash) {
+            // Store hash in your password DB.
+            const user = await User.create({ username, email, password: hash })
+            return res.status(201).json({ msg: "User created", user, status: "success" })
+        });
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({ msg: "Something went wrong.", status: "failed" })
     }
 }
 
-export { registerUser }
+const loginUser = async (req, res) => {
+    const { username, email, password } = req.body
+
+    if ((!username && !email) | !password) {
+        console.log("All fields are required!");
+        return res.json("All fields are required!")
+    }
+
+    let user
+
+    username ? user = await User.findOne({ username }) : user = await User.findOne({ email })
+
+    if (!user) {
+        return res.status(401).json({ msg: "User not found!", status: "failed" })
+    } else {
+
+        bcrypt.compare(password, user.password, function (err, result) {
+            if (result === true) {
+                const token = jwt.sign({ username: user.username, email: user.email, id: user._id },
+                    process.env.JWT_SECRET);
+
+                return res.cookie("token", token,
+                    { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
+                    .status(200)
+                    .json({ msg: "User  found!", status: "success" })
+            } else {
+                return res.status(403).json({ msg: "Username or Password wrong!", status: "failed" })
+            }
+        });
+
+    }
+}
+
+export { registerUser, loginUser }
