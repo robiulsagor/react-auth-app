@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
+import { errorHandler } from "./error.js";
 
 // only admin can access
 const isAdmin = async (req, res, next) => {
     const { token } = req.cookies
 
     if (!token) {
-        return res.json({ msg: "You are not authenticated!", status: "failed" })
+        return next(errorHandler(401, "You are not authenticated! error"))
     }
 
     const decode = jwt.verify(token, process.env.JWT_SECRET)
@@ -14,7 +15,7 @@ const isAdmin = async (req, res, next) => {
         req.user = decode
         next()
     } else {
-        return res.json({ msg: "You are not allowed to go!", status: "failed" })
+        return next(errorHandler(401, "You are not allowed to go!"))
     }
 }
 
@@ -24,7 +25,7 @@ const isCurrentUser = async (req, res, next) => {
     const { id } = req.params
 
     if (!token) {
-        return res.json({ msg: "You are not authenticated!", status: "failed" })
+        return next(errorHandler(401, "You are not authenticated!"))
     }
 
     const decode = jwt.verify(token, process.env.JWT_SECRET)
@@ -33,7 +34,7 @@ const isCurrentUser = async (req, res, next) => {
         req.user = decode
         next()
     } else {
-        return res.json({ msg: "This is not your account! Delete your own account, not others'", status: "failed" })
+        return next(errorHandler(403, "This is not your account! Delete your own account, not others'"))
     }
 }
 
@@ -43,7 +44,7 @@ const isAdminOrCurrentUser = async (req, res, next) => {
     const { id } = req.params
 
     if (!token) {
-        return res.json({ msg: "You are not authenticated!", status: "failed" })
+        return next(errorHandler(401, "You are not authenticated!"))
     }
 
     const decode = jwt.verify(token, process.env.JWT_SECRET)
@@ -52,7 +53,7 @@ const isAdminOrCurrentUser = async (req, res, next) => {
         req.user = decode
         next()
     } else {
-        return res.json({ msg: "This is not your account! Delete your own account, not others'", status: "failed" })
+        return next(errorHandler(403, "This is not your account! Delete your own account, not others'"))
     }
 }
 

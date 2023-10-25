@@ -1,23 +1,24 @@
+import { errorHandler } from '../middlewares/error.js';
 import User from '../models/user.js'
 
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
     try {
         const users = await User.find()
-        // const { password, ...others } = users
-        return res.json({ msg: "Successful", users, status: "success" })
+        return res.status(200).json({ message: "Successful", users, success: true })
     } catch (error) {
         console.log(error);
-        return res.json({ msg: "Error...", status: "failed" })
+        return res.status(500).json({ message: "Error...", status: "failed", error: error.message })
     }
 }
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, error) => {
     const { id } = req.params
     try {
         const user = await User.deleteOne({ _id: id })
-        return res.json({ msg: "User deleted", user })
+        return res.status(200).json({ message: "User deleted", user, success: true })
     } catch (error) {
-        return res.json({ msg: "User can't be deleted" })
+        return res.status(500).json({ message: "User can't be deleted", error: error.message, success: false })
+        next(error)
     }
 }
 

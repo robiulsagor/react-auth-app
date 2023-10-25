@@ -12,7 +12,7 @@ import userRoutes from "./routes/user.js"
 import authRoute from "./routes/auth.js"
 
 app.get("/", (req, res) => {
-    res.json({ msg: "You are testing this endpoint, right?" })
+    res.json({ message: "You are testing this endpoint, right?" })
 })
 
 app.use(express.json())
@@ -28,4 +28,16 @@ mongoose.connect(DB_URI)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+})
+
+// error handler
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500
+    const message = err.message || "Internal Server Error!"
+
+    return res.status(statusCode).json({
+        success: false,
+        message,
+        statusCode
+    })
 })
