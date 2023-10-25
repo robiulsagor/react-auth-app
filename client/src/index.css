@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply font-tilt
+}
+
+@layer base {
+    .hover_state>li>a:hover {
+        @apply text-blue-600 transition-all
+    }
+}
