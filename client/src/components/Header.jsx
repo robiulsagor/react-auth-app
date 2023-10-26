@@ -7,13 +7,6 @@ import ProfileIcon from "./../avatar.png"
 const Header = () => {
     const { currentUser } = useSelector(state => state.user)
 
-    if (currentUser !== null) {
-        console.log("ache");
-        console.log(currentUser);
-    } else {
-        console.log("nai");
-    }
-
     return (
         <div className='bg-slate-200'>
             <div className=' max-w-6xl mx-auto flex justify-between items-center p-5'>
@@ -29,7 +22,7 @@ const Header = () => {
                     <li>
                         {currentUser ? (
                             <NavLink to="/profile">
-                                <img src={currentUser?.profilePicture || ProfileIcon} className='w-7 h-7 object-contain rounded-full' />
+                                <img src={currentUser?.profilePicture || ProfileIcon} className='w-8 h-8 bg-red-500 object-cover rounded-full block' />
                             </NavLink>
                         ) : (<NavLink to='/signin'
                             className={({ isActive, IsPending }) => isActive && "text-blue-700"}
