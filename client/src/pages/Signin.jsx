@@ -76,7 +76,7 @@ const Signin = () => {
                     placeholder='Password'
                 />
 
-                <button type='submit' className='form_btn_1'>
+                <button type='submit' className='form_btn_1  hover:bg-slate-600 transition-all flex items-center justify-center disabled:opacity-40'>
                     {loading ? (
                         <>
                             <p
