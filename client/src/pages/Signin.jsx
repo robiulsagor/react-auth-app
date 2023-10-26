@@ -12,9 +12,9 @@ const Signin = () => {
             password: '',
         }
     )
-    // const [loading, setLoading] = useState(false)
-    // const [error, setError] = useState(false)
+
     const { loading, error } = useSelector(state => state.user)
+
 
 
     const navigate = useNavigate()
@@ -71,7 +71,16 @@ const Signin = () => {
                     placeholder='Password'
                 />
 
-                <button type='submit' className='form_btn_1'>SIGN IN</button>
+                <button type='submit' className='form_btn_1'>
+                    {loading ? (
+                        <>
+                            <p
+                                className="animate-spin h-5 w-5 mr-3 text-white border-2 border-white border-r-0 rounded-full">
+                            </p>
+                            Loading
+                        </>
+                    ) : "SIGN IN"}
+                </button>
                 <button type='button' className='form_btn_2'>CONTINUE WITH GOOGLE</button>
             </form>
 
