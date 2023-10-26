@@ -82,13 +82,12 @@ const googleAuth = async (req, res, next) => {
             const hashedPass = bcrypt.hashSync(generatedPassword, 10)
 
             const newUser = new User({ username: generatedUsername, email, password: hashedPass, profilePicture: photoURL })
-            // await newUser.save()
+            await newUser.save()
 
             const token = jwt.sign({ username: newUser.username, email: newUser.email, id: newUser._id, role: newUser.role },
                 process.env.JWT_SECRET);
 
             const { password: pass, ...userData } = newUser._doc
-
 
             return res.status(200).cookie("token", token,
                 { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
