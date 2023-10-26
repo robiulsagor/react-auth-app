@@ -4,7 +4,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ProfileIcon from "./../avatar.png"
 import { app } from '../firebase';
-import { signInFailed, signInStart, signOut, signinSuccess } from '../redux/userSlice';
+import { setMsg, signInFailed, signInStart, signOut, signinSuccess } from '../redux/userSlice';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -120,8 +120,26 @@ const Profile = () => {
     // log out
     const handleLogout = () => {
         dispatch(signOut())
+        dispatch(setMsg("Logged Out successfully!"))
         navigate("/signin")
     }
+
+    // Account Delete function
+    const deleteAccount = async () => {
+        const confirm = window.confirm("Are you sure you want to delete your account?")
+        if (confirm) {
+            try {
+                const deleted = await axios.delete(`/api/user/delete/${currentUser._id}`)
+                dispatch(signOut())
+                dispatch(setMsg("User deleted successfully!"))
+                navigate("/signin")
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
+
     return (
         <div className=' max-w-xl mx-auto text-center px-5'>
             <h2 className='text-center text-3xl font-bold max-sm:text-xl'>Profile</h2>
@@ -174,7 +192,7 @@ const Profile = () => {
             </form>
 
             <div className='text-red-600 flex items-center justify-between mt-4 '>
-                <p className='cursor-pointer'>Delete Account</p>
+                <p className='cursor-pointer' onClick={deleteAccount}>Delete Account</p>
                 <p className='cursor-pointer' onClick={handleLogout}>Sign Out</p>
             </div>
 
