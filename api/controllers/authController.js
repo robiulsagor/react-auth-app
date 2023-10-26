@@ -34,34 +34,32 @@ const registerUser = async (req, res, next) => {
 }
 
 const loginUser = async (req, res, next) => {
-    const { username, email, password } = req.body
+    const { email, password } = req.body
 
-    if ((!username && !email) | !password) {
-        console.log("All fields are required!");
+    if (!email | !password) {
         return next(errorHandler(500, "All fields are required!"))
     }
 
-    let user
+    const user = await User.findOne({ email })
 
-    username ? user = await User.findOne({ username }) : user = await User.findOne({ email })
+    if (!user) return next(errorHandler(500, "User not found!"))
 
-    if (!user) {
-        return next(errorHandler(500, "User not found!"))
+    const checkPass = bcrypt.compareSync(password, user.password)
+
+    if (checkPass === true) {
+        const token = jwt.sign({ username: user.username, email: user.email, id: user._id, role: user.role },
+            process.env.JWT_SECRET);
+
+        const { password: hasedPass, ...rest } = user._doc
+
+        return res.status(200).cookie("token", token,
+            { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
+            .status(200)
+            .json({ message: "User  found!", rest, success: true })
     } else {
-        const checkPass = bcrypt.compareSync(password, user.password)
-
-        if (checkPass === true) {
-            const token = jwt.sign({ username: user.username, email: user.email, id: user._id, role: user.role },
-                process.env.JWT_SECRET);
-
-            return res.status(200).cookie("token", token,
-                { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
-                .status(200)
-                .json({ message: "User  found!", user, success: true })
-        } else {
-            return next(errorHandler(403, "Username or Password wrong!"))
-        }
+        return next(errorHandler(403, "Username or Password wrong!"))
     }
+
 }
 
 export { registerUser, loginUser }

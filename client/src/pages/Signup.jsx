@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from "axios"
 
 const Signup = () => {
@@ -12,6 +12,7 @@ const Signup = () => {
     )
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
+    const navigate = useNavigate()
 
     const handleSubmit = async e => {
         console.log(user.email);
@@ -23,40 +24,41 @@ const Signup = () => {
             setError("All fields are required!")
             setLoading(false)
             return
-        } else {
-            if (user.username.length <= 5) {
-                setError("Username must be at least 6 characters!")
-                setLoading(false)
-                return
-            }
+        }
 
-            // Validate email address
-            const validateEmailRegex = /^\S+@\S+\.\S+$/;
+        if (user.username.length <= 5) {
+            setError("Username must be at least 6 characters!")
+            setLoading(false)
+            return
+        }
 
-            if (!validateEmailRegex.test(user.email)) {
-                setError("Please provide a valid email!")
-                setLoading(false)
-                return
-            }
+        // Validate email address
+        const validateEmailRegex = /^\S+@\S+\.\S+$/;
 
-            if (user.password.length <= 5) {
-                setError("Password must be at least 6 characters!")
-                setLoading(false)
-                return
-            }
+        if (!validateEmailRegex.test(user.email)) {
+            setError("Please provide a valid email!")
+            setLoading(false)
+            return
+        }
 
-            // passed all authentication tests
+        if (user.password.length <= 5) {
+            setError("Password must be at least 6 characters!")
+            setLoading(false)
+            return
+        }
 
-            try {
-                const data = await axios.post('/api/auth/register', user)
-                console.log(data);
-                setLoading(false)
-                setError(false)
-            } catch (error) {
-                console.log(error.response.data.message);
-                setLoading(false)
-                setError(error.response.data.message || "Something went Wrong!")
-            }
+        // passed all authentication tests
+
+        try {
+            const data = await axios.post('/api/auth/register', user)
+            console.log(data);
+            setLoading(false)
+            setError(false)
+            navigate('/signin')
+        } catch (error) {
+            console.log(error.response.data.message);
+            setLoading(false)
+            setError(error.response.data.message || "Something went Wrong!")
         }
     }
 
@@ -69,11 +71,11 @@ const Signup = () => {
                     <p className='text-red-400'>{error} </p>
                 </div>)}
 
-                <input type="text" value={user.username}
+                <input type="text" value={user.username} name="username"
                     onChange={e => setUser({ ...user, username: e.target.value })}
                     placeholder='Username'
                 />
-                <input type="email" value={user.email}
+                <input type="email" value={user.email} name="email"
                     onChange={e => setUser({ ...user, email: e.target.value })}
                     placeholder='Email'
                 />
