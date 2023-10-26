@@ -4,7 +4,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ProfileIcon from "./../avatar.png"
 import { app } from '../firebase';
-import { signInFailed, signInStart, signinSuccess } from '../redux/userSlice';
+import { signInFailed, signInStart, signOut, signinSuccess } from '../redux/userSlice';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -64,7 +64,6 @@ const Profile = () => {
 
     // Image upload handling
     const handleImageUpload = async () => {
-        console.log(image);
         const storage = getStorage(app);
         const imageName = new Date().getTime() + image.name
         const storageRef = ref(storage, imageName)
@@ -75,7 +74,6 @@ const Profile = () => {
             setImageUploading(true)
             const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
             setImagePercent(progress)
-            console.log(user.profilePicture);
         },
             (error) => {
                 setImageErr(error)
@@ -97,7 +95,6 @@ const Profile = () => {
     const handleSubmit = async e => {
         e.preventDefault()
         const userId = currentUser._id
-        console.log(user);
 
         if (!user.username || !user.email) {
             dispatch(signInFailed("Error"))
@@ -120,6 +117,11 @@ const Profile = () => {
         }
     }
 
+    // log out
+    const handleLogout = () => {
+        dispatch(signOut())
+        navigate("/signin")
+    }
     return (
         <div className=' max-w-xl mx-auto text-center px-5'>
             <h2 className='text-center text-3xl font-bold max-sm:text-xl'>Profile</h2>
@@ -136,7 +138,7 @@ const Profile = () => {
                 <input type="file" ref={fileRef} className='hidden' accept='image/*' onChange={e => setImage(e.target.files[0])} />
 
                 <div className='  flex flex-col gap-3 items-center justify-center pb-2'>
-                    <img src={user.profilePicture ? user.profilePicture : currentUser?.profilePicture || ProfileIcon} alt="profile pic" className='w-20 h-20 rounded-full bg-red-900 cursor-pointer hover:opacity-80 transition-all'
+                    <img src={user.profilePicture ? user.profilePicture : currentUser?.profilePicture || ProfileIcon} alt="profile pic" className='w-20 h-20 object-cover rounded-full bg-red-900 cursor-pointer hover:opacity-80 transition-all'
                         onClick={() => fileRef.current.click()} />
 
                     {/* image uploading status */}
@@ -171,9 +173,9 @@ const Profile = () => {
                 </button>
             </form>
 
-            <div className='text-red-600 flex items-center justify-between mt-4'>
-                <p>Delete Account</p>
-                <p>Sign Out</p>
+            <div className='text-red-600 flex items-center justify-between mt-4 '>
+                <p className='cursor-pointer'>Delete Account</p>
+                <p className='cursor-pointer' onClick={handleLogout}>Sign Out</p>
             </div>
 
             <Toaster
