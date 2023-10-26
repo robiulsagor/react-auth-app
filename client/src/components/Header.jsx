@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux"
+import ProfileIcon from "./../avatar.png"
 
 const Header = () => {
     const { currentUser } = useSelector(state => state.user)
@@ -28,7 +29,7 @@ const Header = () => {
                     <li>
                         {currentUser ? (
                             <NavLink to="/profile">
-                                <img src={currentUser.profilePicture} className='w-7 h-7 object-contain rounded-full' />
+                                <img src={currentUser?.profilePicture || ProfileIcon} className='w-7 h-7 object-contain rounded-full' />
                             </NavLink>
                         ) : (<NavLink to='/signin'
                             className={({ isActive, IsPending }) => isActive && "text-blue-700"}

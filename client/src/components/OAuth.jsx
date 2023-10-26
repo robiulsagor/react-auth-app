@@ -15,11 +15,12 @@ const OAuth = () => {
         try {
             const result = await signInWithPopup(auth, provider)
             const { displayName, email, photoURL } = result.user
-            // console.log(displayName, email, photoURL);
+
             const user = await axios.post('/api/auth/google', {
                 displayName, email, photoURL
             })
             console.log(user.data.userData);
+
             dispatch(signinSuccess(user.data.userData))
         } catch (error) {
             console.log(error);
@@ -33,7 +34,7 @@ const OAuth = () => {
     }
     return (
         <div>
-            <button type='button' className='form_btn_2'
+            <button type='button' className='form_btn_2 hover:opacity-80 transition-all'
                 onClick={handleGoogleSignin}>CONTINUE WITH GOOGLE</button>
             <Toaster position="top-right" />
         </div>
