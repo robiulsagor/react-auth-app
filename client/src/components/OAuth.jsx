@@ -4,9 +4,11 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { signInFailed, signinSuccess } from "../redux/userSlice";
 import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom"
 
 const OAuth = () => {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const provider = new GoogleAuthProvider();
     const auth = getAuth(app);
@@ -22,6 +24,7 @@ const OAuth = () => {
             console.log(user.data.userData);
 
             dispatch(signinSuccess(user.data.userData))
+            navigate("/")
         } catch (error) {
             console.log(error);
             dispatch(signInFailed(error?.response?.data?.message || error?.message || "Something went Wrong!"))
