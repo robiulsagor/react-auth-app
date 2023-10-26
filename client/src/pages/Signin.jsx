@@ -1,11 +1,15 @@
 import axios from 'axios'
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from "react-redux"
 import { signInFailed, signInStart, signinSuccess } from "../redux/userSlice"
+import OAuth from '../components/OAuth';
 
 const Signin = () => {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+
     const [user, setUser] = useState(
         {
             email: '',
@@ -13,12 +17,13 @@ const Signin = () => {
         }
     )
 
-    const { loading, error } = useSelector(state => state.user)
+    const { loading, error, currentUser } = useSelector(state => state.user)
 
-
-
-    const navigate = useNavigate()
-    const dispatch = useDispatch()
+    useEffect(() => {
+        if (currentUser) {
+            navigate("/")
+        }
+    }, [])
 
     const handleSubmit = async e => {
         e.preventDefault()
@@ -81,7 +86,7 @@ const Signin = () => {
                         </>
                     ) : "SIGN IN"}
                 </button>
-                <button type='button' className='form_btn_2'>CONTINUE WITH GOOGLE</button>
+                <OAuth />
             </form>
 
             <p className='mt-5 text-lg'>Don't have an account? <Link to='/signup' className='link_blue'>Sign Up</Link> Now  </p>

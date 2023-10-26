@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from "axios"
+import OAuth from '../components/OAuth'
+import { useSelector } from 'react-redux'
 
 const Signup = () => {
     const [user, setUser] = useState(
@@ -13,6 +15,14 @@ const Signup = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const navigate = useNavigate()
+
+    const { currentUser } = useSelector(state => state.user)
+
+    useEffect(() => {
+        if (currentUser) {
+            navigate("/")
+        }
+    }, [])
 
     const handleSubmit = async e => {
         console.log(user.email);
@@ -95,7 +105,7 @@ const Signup = () => {
                     ) : "SIGN UP"}
                 </button>
 
-                <button type='button' className='form_btn_2'>CONTINUE WITH GOOGLE</button>
+                <OAuth />
             </form>
 
 

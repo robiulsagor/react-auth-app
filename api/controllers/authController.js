@@ -57,7 +57,47 @@ const loginUser = async (req, res, next) => {
     } else {
         return next(errorHandler(403, "Username or Password wrong!"))
     }
-
 }
 
-export { registerUser, loginUser }
+const googleAuth = async (req, res, next) => {
+    const { displayName, email, photoURL } = req.body
+
+    try {
+        const user = await User.findOne({ email })
+        if (user) {
+            const token = jwt.sign({ username: user.username, email: user.email, id: user._id, role: user.role },
+                process.env.JWT_SECRET);
+
+            const { password: hasedPass, ...userData } = user._doc
+
+            return res.status(200).cookie("token", token,
+                { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
+                .status(200)
+                .json({ message: "User  found!", userData, success: true })
+        } else {
+            const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
+
+            const generatedUsername = displayName.split(" ").join("").toLowerCase() + Math.floor(Math.random() * 10000)
+
+            const hashedPass = bcrypt.hashSync(generatedPassword, 10)
+
+            const newUser = new User({ username: generatedUsername, email, password: hashedPass, profilePicture: photoURL })
+            // await newUser.save()
+
+            const token = jwt.sign({ username: newUser.username, email: newUser.email, id: newUser._id, role: newUser.role },
+                process.env.JWT_SECRET);
+
+            const { password: pass, ...userData } = newUser._doc
+
+
+            return res.status(200).cookie("token", token,
+                { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
+                .status(200)
+                .json({ message: "User created!", userData, success: true })
+        }
+    } catch (error) {
+        return next(errorHandler(500, error.message))
+    }
+}
+
+export { registerUser, loginUser, googleAuth }
