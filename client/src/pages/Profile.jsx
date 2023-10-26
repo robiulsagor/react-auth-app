@@ -1,27 +1,44 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ProfileIcon from "./../avatar.png"
 import { app } from '../firebase';
+import { signInFailed, signInStart, signinSuccess } from '../redux/userSlice';
+import axios from 'axios';
 
 const Profile = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const fileRef = useRef()
     const { loading, error, currentUser } = useSelector(state => state.user)
-    const [user, setUser] = useState(
-        {
-            username: currentUser.username,
-            email: currentUser.email,
-            password: '',
-            profilePicture: currentUser.profilePicture
-        }
-    )
+
     const [image, setImage] = useState(undefined)
     const [imagePercent, setImagePercent] = useState()
     const [imageUploading, setImageUploading] = useState(false)
     const [imageErr, setImageErr] = useState(false)
     const [uploadedURL, setUploadedURL] = useState(null)
+
+    const [user, setUser] = useState(
+        {
+            username: '',
+            email: '',
+            password: '',
+            profilePicture: ''
+        }
+    )
+
+    useEffect(() => {
+        if (currentUser) {
+            setUser({
+                ...user,
+                username: currentUser.username,
+                email: currentUser.email,
+                profilePicture: currentUser.profilePicture
+            })
+        }
+
+    }, [currentUser])
 
     useEffect(() => {
         if (!currentUser) {
@@ -35,6 +52,7 @@ const Profile = () => {
         }
     }, [image])
 
+    // Image upload handling
     const handleImageUpload = async () => {
         console.log(image);
         const storage = getStorage(app);
@@ -65,9 +83,25 @@ const Profile = () => {
         )
     }
 
+    // Form submission handling
     const handleSubmit = async e => {
         e.preventDefault()
+        const userId = currentUser._id
         console.log(user);
+
+        if (!user.username || !user.email) {
+            dispatch(signInFailed("Error"))
+            return
+        }
+
+        try {
+            dispatch(signInStart())
+            const updated = await axios.put(`/api/user/update/${userId}`, user)
+            dispatch(signinSuccess(updated.data.rest))
+        } catch (error) {
+            console.log(error);
+            dispatch(signInFailed(500, "Something went wrong!"))
+        }
     }
 
     return (
