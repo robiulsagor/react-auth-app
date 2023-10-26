@@ -6,6 +6,8 @@ import ProfileIcon from "./../avatar.png"
 import { app } from '../firebase';
 import { signInFailed, signInStart, signinSuccess } from '../redux/userSlice';
 import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
+
 
 const Profile = () => {
     const navigate = useNavigate()
@@ -51,6 +53,14 @@ const Profile = () => {
             handleImageUpload(image)
         }
     }, [image])
+
+    useEffect(() => {
+        if (uploadedURL) {
+            setTimeout(() => {
+                setUploadedURL(null)
+            }, 4000);
+        }
+    }, [uploadedURL])
 
     // Image upload handling
     const handleImageUpload = async () => {
@@ -98,8 +108,14 @@ const Profile = () => {
             dispatch(signInStart())
             const updated = await axios.put(`/api/user/update/${userId}`, user)
             dispatch(signinSuccess(updated.data.rest))
+            toast.success('User Updated Successfully!', {
+                id: 'notificaion'
+            });
         } catch (error) {
             console.log(error);
+            toast.error('User can\'t be Updated !', {
+                id: 'notificaion'
+            });
             dispatch(signInFailed(500, "Something went wrong!"))
         }
     }
@@ -159,6 +175,11 @@ const Profile = () => {
                 <p>Delete Account</p>
                 <p>Sign Out</p>
             </div>
+
+            <Toaster
+                position='top-right'
+                id="notification"
+            />
         </div>
     )
 }
