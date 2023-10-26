@@ -28,7 +28,6 @@ const Signin = () => {
 
         try {
             const data = await axios.post('/api/auth/login', user)
-            console.log(data.data);
             setLoading(false)
             setError(false)
             toast.success('User found!', {
@@ -37,7 +36,6 @@ const Signin = () => {
 
             navigate("/")
         } catch (error) {
-            console.log(error.response.data.message);
             setLoading(false)
             setError(error.response.data.message || "Something went Wrong!")
             toast.error(error.response.data.message, {
