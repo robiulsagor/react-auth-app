@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from "dotenv"
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
+import path from 'path'
 const app = express()
 dotenv.config()
 
@@ -11,8 +12,11 @@ const DB_URI = process.env.MONGO_URI
 import userRoutes from "./routes/user.js"
 import authRoute from "./routes/auth.js"
 
-app.get("/", (req, res) => {
-    res.json({ message: "You are testing this endpoint, right?" })
+const __dirname = path.resolve()
+app.use(express.static(path.join(__dirname, '/client/dist')))
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "dist", "index.html"))
 })
 
 app.use(express.json())
