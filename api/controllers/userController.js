@@ -1,5 +1,6 @@
 import { errorHandler } from '../middlewares/error.js';
 import User from '../models/user.js'
+import bcrypt from 'bcrypt'
 
 const getAllUsers = async (req, res, next) => {
     try {
@@ -22,4 +23,39 @@ const deleteUser = async (req, res, error) => {
     }
 }
 
-export { getAllUsers, deleteUser }
+// update user funtion
+const updateUser = async (req, res, next) => {
+    let { profilePicture, username, email, password } = req.body
+    const id = req.params.id
+
+    try {
+        let updatedUser;
+
+        if (password) {
+            const hasedPass = bcrypt.hashSync(password, 10)
+            updatedUser = await User.findByIdAndUpdate(id,
+                {
+                    $set: {
+                        profilePicture, username, email, password: hasedPass
+                    }
+                }, { new: true })
+        } else {
+            updatedUser = await User.findByIdAndUpdate(id,
+                {
+                    $set: {
+                        profilePicture, username, email
+                    }
+                }, { new: true })
+        }
+        const { password: pass, ...rest } = updatedUser._doc
+
+        return res.status(200).json({ message: "Successfully updated user!", rest, success: true })
+
+    } catch (error) {
+        console.log(error);
+        next(errorHandler(500, "Can't update user!"))
+    }
+
+}
+
+export { getAllUsers, deleteUser, updateUser }

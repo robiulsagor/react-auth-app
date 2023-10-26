@@ -34,7 +34,7 @@ const isCurrentUser = async (req, res, next) => {
         req.user = decode
         next()
     } else {
-        return next(errorHandler(403, "This is not your account! Delete your own account, not others'"))
+        return next(errorHandler(403, "This is not your account! Access your own account, not others'"))
     }
 }
 
