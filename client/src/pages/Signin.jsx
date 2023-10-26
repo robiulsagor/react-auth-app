@@ -33,12 +33,14 @@ const Signin = () => {
             toast.success('User found!', {
                 id: 'notificaion'
             });
+            console.log(data);
 
             navigate("/")
         } catch (error) {
             setLoading(false)
-            setError(error.response.data.message || "Something went Wrong!")
-            toast.error(error.response.data.message, {
+            console.log(error);
+            setError(error?.response?.data?.message || error?.message || "Something went Wrong!")
+            toast.error(error?.response?.data?.message || error?.message, {
                 id: 'notificaion'
             });
         }
