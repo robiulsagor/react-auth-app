@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from "react-redux"
-import { signInFailed, signInStart, signinSuccess } from "../redux/userSlice"
+import { clearMsg, signInFailed, signInStart, signinSuccess } from "../redux/userSlice"
 import OAuth from '../components/OAuth';
 
 const Signin = () => {
@@ -17,7 +17,20 @@ const Signin = () => {
         }
     )
 
-    const { loading, error, currentUser } = useSelector(state => state.user)
+    const { loading, error, currentUser, message } = useSelector(state => state.user)
+
+    // if any notifications, show them as a toast msg
+    useEffect(() => {
+        if (message) {
+            console.log(message);
+            toast.success(message, { id: 'notification' })
+
+            setTimeout(() => {
+                console.log("out");
+                dispatch(clearMsg())
+            }, 4000);
+        }
+    }, [message])
 
     useEffect(() => {
         if (currentUser) {

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from "axios"
 import OAuth from '../components/OAuth'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { setMsg } from '../redux/userSlice'
 
 const Signup = () => {
     const [user, setUser] = useState(
@@ -15,6 +16,7 @@ const Signup = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const { currentUser } = useSelector(state => state.user)
 
@@ -64,6 +66,7 @@ const Signup = () => {
             console.log(data);
             setLoading(false)
             setError(false)
+            dispatch(setMsg("User created. Now Sign In please"))
             navigate('/signin')
         } catch (error) {
             console.log(error.response.data.message);
