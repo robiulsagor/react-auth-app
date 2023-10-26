@@ -33,10 +33,9 @@ const Signin = () => {
                     placeholder='Password'
                 />
 
+                <button type='submit' className='form_btn_1'>SIGN IN</button>
+                <button type='button' className='form_btn_2'>CONTINUE WITH GOOGLE</button>
             </form>
-
-            <button type='submit' className='form_btn_1'>SIGN IN</button>
-            <button type='submit' className='form_btn_2'>CONTINUE WITH GOOGLE</button>
 
             <p className='mt-5 text-lg'>Don't have an account? <Link to='/signup' className='link_blue'>Sign Up</Link> Now  </p>
         </div>

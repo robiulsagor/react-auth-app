@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from "axios"
 
 const Signup = () => {
     const [user, setUser] = useState(
@@ -9,17 +10,65 @@ const Signup = () => {
             password: '',
         }
     )
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
+        console.log(user.email);
         e.preventDefault()
-        console.log(user);
+        setLoading(true)
+        setError(false)
+
+        if (!user.username || !user.email || !user.password) {
+            setError("All fields are required!")
+            setLoading(false)
+            return
+        } else {
+            if (user.username.length <= 5) {
+                setError("Username must be at least 6 characters!")
+                setLoading(false)
+                return
+            }
+
+            // Validate email address
+            const validateEmailRegex = /^\S+@\S+\.\S+$/;
+
+            if (!validateEmailRegex.test(user.email)) {
+                setError("Please provide a valid email!")
+                setLoading(false)
+                return
+            }
+
+            if (user.password.length <= 5) {
+                setError("Password must be at least 6 characters!")
+                setLoading(false)
+                return
+            }
+
+            // passed all authentication tests
+
+            try {
+                const data = await axios.post('/api/auth/register', user)
+                console.log(data);
+                setLoading(false)
+                setError(false)
+            } catch (error) {
+                console.log(error.response.data.message);
+                setLoading(false)
+                setError(error.response.data.message || "Something went Wrong!")
+            }
+        }
     }
 
     return (
-        <div className=' max-w-[500px] mx-auto'>
+        <div className='p-3 max-w-lg mx-auto'>
             <h2 className='text-4xl font-bold text-center'>Sign Up</h2>
 
             <form onSubmit={handleSubmit} className=' flex flex-col mt-10 form'>
+                {error && (<div className='mb-5'>
+                    <p className='text-red-400'>{error} </p>
+                </div>)}
+
                 <input type="text" value={user.username}
                     onChange={e => setUser({ ...user, username: e.target.value })}
                     placeholder='Username'
@@ -33,12 +82,24 @@ const Signup = () => {
                     placeholder='Password'
                 />
 
+                <button disabled={loading} type='submit' className='form_btn_1  hover:bg-slate-600 transition-all flex items-center justify-center disabled:opacity-40'>
+                    {loading ? (
+                        <>
+                            <p
+                                className="animate-spin h-5 w-5 mr-3 text-white border-2 border-white border-r-0 rounded-full">
+                            </p>
+                            Loading
+                        </>
+                    ) : "SIGN UP"}
+                </button>
+
+                <button type='button' className='form_btn_2'>CONTINUE WITH GOOGLE</button>
             </form>
 
-            <button type='submit' className='form_btn_1  hover:bg-slate-600 transition-all'>SIGN UP</button>
-            <button type='submit' className='form_btn_2'>CONTINUE WITH GOOGLE</button>
 
             <p className='mt-5 text-lg'>Already have an account? <Link to='/signin' className='link_blue'>Sign In</Link> Now  </p>
+
+
         </div>
     )
 }

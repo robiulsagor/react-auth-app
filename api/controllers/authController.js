@@ -26,6 +26,7 @@ const registerUser = async (req, res, next) => {
     try {
         const hasedPass = bcrypt.hashSync(password, 10)
         const user = await User.create({ username, email, password: hasedPass })
+        console.log(user);
         return res.status(201).json({ message: "User created", user, success: true })
     } catch (error) {
         return next(errorHandler(500, "Something went wrong."))
