@@ -8,9 +8,9 @@ import { errorHandler } from "../middlewares/error.js";
 const registerUser = async (req, res, next) => {
     const { username, email, password } = req.body
 
-    // if (!username | !email | !password) {
-    //     return next(errorHandler(502, "All fields are required!"))
-    // }
+    if (!username | !email | !password) {
+        return next(errorHandler(502, "All fields are required!"))
+    }
 
     const userExits = await User.findOne({ username })
     if (userExits) {
