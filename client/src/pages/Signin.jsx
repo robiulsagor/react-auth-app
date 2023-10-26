@@ -2,6 +2,8 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch, useSelector } from "react-redux"
+import { signInFailed, signInStart, signinSuccess } from "../redux/userSlice"
 
 const Signin = () => {
     const [user, setUser] = useState(
@@ -10,26 +12,30 @@ const Signin = () => {
             password: '',
         }
     )
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(false)
+    // const [loading, setLoading] = useState(false)
+    // const [error, setError] = useState(false)
+    const { loading, error } = useSelector(state => state.user)
+
+
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleSubmit = async e => {
         e.preventDefault()
-        setError(false)
-        setLoading(true)
+
+        dispatch(signInStart())
+
         toast.dismiss();
 
         if (!user.email || !user.password) {
-            setError("All fields are required!")
-            setLoading(false)
+            dispatch(signInFailed("All fields are required!"))
             return
         }
 
         try {
             const data = await axios.post('/api/auth/login', user)
-            setLoading(false)
-            setError(false)
+            dispatch(signinSuccess(data.data.userData))
+
             toast.success('User found!', {
                 id: 'notificaion'
             });
@@ -37,9 +43,9 @@ const Signin = () => {
 
             navigate("/")
         } catch (error) {
-            setLoading(false)
+            dispatch(signInFailed(error?.response?.data?.message || error?.message || "Something went Wrong!"))
             console.log(error);
-            setError(error?.response?.data?.message || error?.message || "Something went Wrong!")
+
             toast.error(error?.response?.data?.message || error?.message, {
                 id: 'notificaion'
             });
