@@ -48,12 +48,12 @@ const loginUser = async (req, res, next) => {
         const token = jwt.sign({ username: user.username, email: user.email, id: user._id, role: user.role },
             process.env.JWT_SECRET);
 
-        const { password: hasedPass, ...rest } = user._doc
+        const { password: hasedPass, ...userData } = user._doc
 
         return res.status(200).cookie("token", token,
             { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 })
             .status(200)
-            .json({ message: "User  found!", rest, success: true })
+            .json({ message: "User  found!", userData, success: true })
     } else {
         return next(errorHandler(403, "Username or Password wrong!"))
     }
