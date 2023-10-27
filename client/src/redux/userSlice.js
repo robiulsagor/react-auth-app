@@ -40,8 +40,11 @@ export const userSlice = createSlice({
         clearMsg: (state, action) => {
             state.message = action.payload
         },
+        clearErrMsg: state => {
+            state.error = false
+        }
     }
 })
 
-export const { signInStart, signinSuccess, signInFailed, signOut, setMsg, clearMsg } = userSlice.actions
+export const { signInStart, signinSuccess, signInFailed, signOut, setMsg, clearMsg, clearErrMsg } = userSlice.actions
 export default userSlice.reducer
