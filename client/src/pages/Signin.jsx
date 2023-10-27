@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast';
 import { useDispatch, useSelector } from "react-redux"
-import { clearMsg, signInFailed, signInStart, signinSuccess } from "../redux/userSlice"
+import { clearErrMsg, clearMsg, signInFailed, signInStart, signinSuccess } from "../redux/userSlice"
 import OAuth from '../components/OAuth';
 
 const Signin = () => {
@@ -30,7 +30,16 @@ const Signin = () => {
                 dispatch(clearMsg())
             }, 4000);
         }
-    }, [message])
+
+        if (error) {
+            console.log(error);
+
+            setTimeout(() => {
+                console.log("error out");
+                dispatch(clearErrMsg())
+            }, 6000);
+        }
+    }, [message, error])
 
     useEffect(() => {
         if (currentUser) {
